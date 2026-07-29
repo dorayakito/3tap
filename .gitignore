@@ -1,0 +1,6 @@
+.build/
+.swiftpm/
+3Tap.app
+.DS_Store
+*.o
+*.dSYM
