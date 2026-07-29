@@ -4,6 +4,12 @@
 
 ---
 
+## Motivação
+
+Este projeto nasceu de uma necessidade prática: a tecla **Enter/Return** física do meu **MacBook Pro M1** parou de funcionar. Em vez de depender de teclados virtuais na tela ou remapeamentos complexos de teclado, criei o **3Tap** para enviar o comando de `Enter` com um simples toque de 3 dedos no trackpad — o que facilitou demais o meu uso no dia a dia!
+
+---
+
 ## 🚀 Recursos
 
 - **Execução em Segundo Plano**: Roda nativamente na barra de menus (sem ícone no Dock).
