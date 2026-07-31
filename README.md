@@ -10,7 +10,7 @@ Este projeto nasceu de uma necessidade prática: a tecla **Enter/Return** físic
 
 ---
 
-## 🚀 Recursos
+## Recursos
 
 - **Execução em Segundo Plano**: Roda nativamente na barra de menus (sem ícone no Dock).
 - **Detecção Precisa de Gestos**: Ouve toques no Trackpad (integrado de MacBooks ou Magic Trackpad) via `MultitouchSupport`.
@@ -20,7 +20,7 @@ Este projeto nasceu de uma necessidade prática: a tecla **Enter/Return** físic
 
 ---
 
-## 📦 Como Compilar e Instalar
+## Como Compilar e Instalar
 
 ### Requisitos
 - macOS 13.0 (Ventura) ou superior
@@ -47,7 +47,7 @@ open /Applications/3Tap.app
 
 ---
 
-## 🔒 Permissão de Acessibilidade
+## Permissão de Acessibilidade
 
 Para enviar comandos de teclado (`CGEvent`), o macOS exige permissão de **Acessibilidade**:
 
@@ -57,6 +57,6 @@ Para enviar comandos de teclado (`CGEvent`), o macOS exige permissão de **Acess
 
 ---
 
-## 🛠️ Licença
+## Licença
 
 Este projeto é disponibilizado sob a licença [MIT](LICENSE).
