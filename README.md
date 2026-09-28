@@ -1,44 +1,43 @@
-# 3Tap 🖐️ ↵
+# 3Tap
 
-> Utility simples e leve para macOS que roda na barra de menus e converte **toques de 3 dedos no trackpad** no comando **Enter/Return**.
-
----
-
-## Motivação
-
-Este projeto nasceu de uma necessidade prática: a tecla **Enter/Return** física do meu **MacBook Pro M1** parou de funcionar. Em vez de depender de teclados virtuais na tela ou remapeamentos complexos de teclado, criei o **3Tap** para enviar o comando de `Enter` com um simples toque de 3 dedos no trackpad — o que facilitou demais o meu uso no dia a dia!
+Utilitario leve e nativo para macOS que roda na barra de menus e converte toques de tres dedos no trackpad no comando Enter/Return.
 
 ---
 
 ## Recursos
 
-- **Execução em Segundo Plano**: Roda nativamente na barra de menus (sem ícone no Dock).
-- **Detecção Precisa de Gestos**: Ouve toques no Trackpad (integrado de MacBooks ou Magic Trackpad) via `MultitouchSupport`.
-- **Filtro Inteligente**: Diferencia toques rápidos de gestos de rolagem ou arraste para evitar disparos acidentais.
-- **Leve e Rápido**: Escrito em Swift e C nativo com baixo consumo de memória.
-- **Inicialização com o Sistema**: Opção no menu para iniciar automaticamente no login do macOS.
+- **Execucao em Segundo Plano**: Opera exclusivamente na barra de menus (LSUIElement), sem ocupar espaco no Dock.
+- **Deteccao Precisa de Gestos**: Integra-se diretamente a API nativa privada MultitouchSupport para capturar eventos de contato no trackpad (integrado ou Magic Trackpad).
+- **Filtro Inteligente de Toque**: Aplica validacao de duracao maxima e deslocamento espacial minimo para diferenciar toques intencionais de gestos de rolagem, zoom ou arraste.
+- **Desempenho e Eficiencia**: Desenvolvido em Swift e Objective-C/C nativo, com baixo consumo de CPU e memoria.
+- **Persistencia e Resiliencia**: Suporte a inicializacao automatica no login do macOS atraves de SMAppService e configuracao resiliente com LaunchAgent (KeepAlive).
 
 ---
 
-## Como Compilar e Instalar
+## Requisitos
 
-### Requisitos
 - macOS 13.0 (Ventura) ou superior
-- Swift 5.9+ / Xcode Command Line Tools
+- Apple Silicon ou Intel
+- Xcode Command Line Tools (`swiftc` e `clang`)
 
-### Compilando
-Clone o repositório e execute o script de build:
+---
+
+## Compilacao e Instalacao Local
+
+### 1. Compilar
+
+Execute o script de build:
 
 ```bash
-git clone https://github.com/dorayakito/3tap.git
-cd 3tap
+chmod +x build.sh
 ./build.sh
 ```
 
-Isso gerará o pacote `3Tap.app` compilado em modo Release.
+O script ira compilar os modulos nativos, criar o pacote `3Tap.app` e assinar o bundle localmente via `codesign`.
 
-### Instalando nas Aplicações
-Para mover para a pasta de Aplicações e executar:
+### 2. Instalar no Sistema
+
+Mova o executavel para o diretorio de Aplicativos:
 
 ```bash
 cp -R 3Tap.app /Applications/
@@ -47,16 +46,60 @@ open /Applications/3Tap.app
 
 ---
 
-## Permissão de Acessibilidade
+## Configuracao de Persistencia (LaunchAgent)
 
-Para enviar comandos de teclado (`CGEvent`), o macOS exige permissão de **Acessibilidade**:
+Para que o 3Tap inicie automaticamente com o sistema e seja reiniciado de forma resiliente caso o processo seja finalizado:
 
-1. Clique no ícone `↵` do **3Tap** na barra de menus.
-2. Clique em **"⚠️ Permissão de Acessibilidade Necessária!"**.
-3. Em **Ajustes do Sistema > Privacidade e Segurança > Acessibilidade**, ative o **3Tap**.
+1. Crie o arquivo `~/Library/LaunchAgents/com.victor.3tap.plist`:
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.victor.3tap</string>
+    <key>ProgramArguments</key>
+    <array>
+        <string>/Applications/3Tap.app/Contents/MacOS/3Tap</string>
+    </array>
+    <key>RunAtLoad</key>
+    <true/>
+    <key>KeepAlive</key>
+    <true/>
+    <key>ProcessType</key>
+    <string>Interactive</string>
+</dict>
+</plist>
+```
+
+2. Carregue o servico com o `launchctl`:
+
+```bash
+launchctl load -w ~/Library/LaunchAgents/com.victor.3tap.plist
+```
 
 ---
 
-## Licença
+## Permissoes do Sistema
 
-Este projeto é disponibilizado sob a licença [MIT](LICENSE).
+Para sintetizar eventos de teclado (`CGEvent`), o macOS requer autorizacao de Acessibilidade:
+
+1. Abra **Ajustes do Sistema > Privacidade e Seguranca > Acessibilidade**.
+2. Habilite a permissao para o **3Tap**.
+
+---
+
+## Integracao Continua e Releases (GitHub Actions)
+
+O projeto conta com uma esteira de automacao configurada em `.github/workflows/build-and-release.yml`:
+
+- **Validacao de Build**: Executada automaticamente a cada push ou pull request na branch `main`.
+- **Geracao de Artefato**: Compila e disponibiliza o arquivo `3Tap.zip` contendo o bundle pronto para uso.
+- **Publicacao de Release**: Ao criar e enviar uma tag de versao (ex: `git tag v1.0.0 && git push origin v1.0.0`), a Action compila a aplicacao e publica uma nova Release no repositorio com os binarios anexados.
+
+---
+
+## Licenca
+
+Este projeto e disponibilizado sob a licenca [MIT](LICENSE).
