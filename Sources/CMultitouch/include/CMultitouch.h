@@ -11,6 +11,7 @@ typedef void (*MTTapCallback)(void);
 
 void MTBridgeStartListening(MTTapCallback callback);
 void MTBridgeStopListening(void);
+void MTBridgeRestartListening(void);
 void MTBridgeSetMaxDuration(double durationSeconds);
 void MTBridgeSetMaxMovement(float movementThreshold);
 BOOL MTBridgeIsListening(void);

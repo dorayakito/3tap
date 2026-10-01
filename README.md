@@ -10,7 +10,7 @@ Utilitario leve e nativo para macOS que roda na barra de menus e converte toques
 - **Deteccao Precisa de Gestos**: Integra-se diretamente a API nativa privada MultitouchSupport para capturar eventos de contato no trackpad (integrado ou Magic Trackpad).
 - **Filtro Inteligente de Toque**: Aplica validacao de duracao maxima e deslocamento espacial minimo para diferenciar toques intencionais de gestos de rolagem, zoom ou arraste.
 - **Desempenho e Eficiencia**: Desenvolvido em Swift e Objective-C/C nativo, com baixo consumo de CPU e memoria.
-- **Persistencia e Resiliencia**: Suporte a inicializacao automatica no login do macOS atraves de SMAppService e configuracao resiliente com LaunchAgent (KeepAlive).
+- **Persistencia e Resiliencia**: Suporte a inicializacao automatica no login do macOS atraves de SMAppService, com recuperacao do listener apos repouso/despertar.
 
 ---
 
@@ -46,11 +46,23 @@ open /Applications/3Tap.app
 
 ---
 
-## Configuracao de Persistencia (LaunchAgent)
+## Configuracao de Persistencia (macOS 13+)
 
-Para que o 3Tap inicie automaticamente com o sistema e seja reiniciado de forma resiliente caso o processo seja finalizado:
+Use a opcao **Iniciar com o Sistema** no menu do 3Tap. No macOS 13 ou superior, o aplicativo usa `SMAppService`.
 
-1. Crie o arquivo `~/Library/LaunchAgents/com.victor.3tap.plist`:
+Nao mantenha simultaneamente um LaunchAgent manual com o mesmo identificador, pois isso pode iniciar duas copias. Se voce configurou a versao antiga manualmente, remova-a uma vez:
+
+```bash
+launchctl bootout gui/$(id -u) ~/Library/LaunchAgents/com.victor.3tap.plist 2>/dev/null || true
+rm -f ~/Library/LaunchAgents/com.victor.3tap.plist
+```
+
+Para versoes antigas do macOS, o aplicativo ainda pode usar um LaunchAgent como fallback. Nao crie esse arquivo manualmente no macOS 13+.
+
+<!-- The old manual LaunchAgent configuration is intentionally omitted. -->
+
+<!--
+Configuracao antiga:
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -78,6 +90,7 @@ Para que o 3Tap inicie automaticamente com o sistema e seja reiniciado de forma 
 ```bash
 launchctl load -w ~/Library/LaunchAgents/com.victor.3tap.plist
 ```
+-->
 
 ---
 

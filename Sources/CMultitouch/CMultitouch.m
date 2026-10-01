@@ -42,6 +42,9 @@ typedef void (*MTDeviceStopFunc)(MTDeviceRef device);
 static MTTapCallback g_tapCallback = NULL;
 static BOOL g_isListening = NO;
 static BOOL g_isTracking = NO;
+static CFArrayRef g_devices = NULL;
+static MTDeviceStartFunc g_deviceStart = NULL;
+static MTDeviceStopFunc g_deviceStop = NULL;
 static double g_tapStartTime = 0.0;
 static MTPoint g_startPos[3];
 static BOOL g_dragDetected = NO;
@@ -112,32 +115,48 @@ void MTBridgeStartListening(MTTapCallback callback) {
         
         MTDeviceCreateListFunc createList = (MTDeviceCreateListFunc)dlsym(handle, "MTDeviceCreateList");
         MTRegisterContactFrameCallbackFunc registerCb = (MTRegisterContactFrameCallbackFunc)dlsym(handle, "MTRegisterContactFrameCallback");
-        MTDeviceStartFunc deviceStart = (MTDeviceStartFunc)dlsym(handle, "MTDeviceStart");
+        g_deviceStart = (MTDeviceStartFunc)dlsym(handle, "MTDeviceStart");
+        g_deviceStop = (MTDeviceStopFunc)dlsym(handle, "MTDeviceStop");
         
-        if (!createList || !registerCb || !deviceStart) {
+        if (!createList || !registerCb || !g_deviceStart || !g_deviceStop) {
             NSLog(@"[3Tap] Error: Could not locate symbols in MultitouchSupport");
             return;
         }
         
-        CFArrayRef devices = createList();
-        if (!devices) {
+        g_devices = createList();
+        if (!g_devices) {
             NSLog(@"[3Tap] Warning: No multitouch devices returned");
             return;
         }
         
-        CFIndex count = CFArrayGetCount(devices);
+        CFIndex count = CFArrayGetCount(g_devices);
         NSLog(@"[3Tap] MultitouchListener initialized on %ld device(s)", count);
         
         for (CFIndex i = 0; i < count; i++) {
-            MTDeviceRef dev = (MTDeviceRef)CFArrayGetValueAtIndex(devices, i);
+            MTDeviceRef dev = (MTDeviceRef)CFArrayGetValueAtIndex(g_devices, i);
             registerCb(dev, mtContactCallback);
-            deviceStart(dev, 0);
+            g_deviceStart(dev, 0);
         }
     });
 }
 
 void MTBridgeStopListening(void) {
     g_isListening = NO;
+}
+
+void MTBridgeRestartListening(void) {
+    g_isListening = NO;
+    g_isTracking = NO;
+
+    if (!g_devices || !g_deviceStart || !g_deviceStop) return;
+
+    CFIndex count = CFArrayGetCount(g_devices);
+    for (CFIndex i = 0; i < count; i++) {
+        MTDeviceRef dev = (MTDeviceRef)CFArrayGetValueAtIndex(g_devices, i);
+        g_deviceStop(dev);
+        g_deviceStart(dev, 0);
+    }
+    g_isListening = YES;
 }
 
 void MTBridgeSetMaxDuration(double durationSeconds) {

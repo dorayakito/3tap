@@ -29,10 +29,13 @@ final class LaunchAtLogin {
         if #available(macOS 13.0, *) {
             do {
                 if enable {
+                    // Remove a legacy LaunchAgent so it cannot start a second copy.
+                    try? FileManager.default.removeItem(atPath: plistPath)
                     try SMAppService.mainApp.register()
                     print("[3Tap] Registered launch at login via SMAppService")
                 } else {
                     try SMAppService.mainApp.unregister()
+                    try? FileManager.default.removeItem(atPath: plistPath)
                     print("[3Tap] Unregistered launch at login via SMAppService")
                 }
                 return

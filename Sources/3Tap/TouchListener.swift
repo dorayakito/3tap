@@ -25,6 +25,11 @@ final class TouchListener {
         isEnabled = false
         MTBridgeStopListening()
     }
+
+    func restartAfterWake() {
+        guard isEnabled else { return }
+        MTBridgeRestartListening()
+    }
     
     func toggle() {
         if isEnabled {

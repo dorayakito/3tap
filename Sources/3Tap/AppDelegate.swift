@@ -9,6 +9,18 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private var launchAtLoginItem: NSMenuItem!
     
     func applicationDidFinishLaunching(_ notification: Notification) {
+        NSWorkspace.shared.notificationCenter.addObserver(
+            self,
+            selector: #selector(handleSleep),
+            name: NSWorkspace.willSleepNotification,
+            object: nil
+        )
+        NSWorkspace.shared.notificationCenter.addObserver(
+            self,
+            selector: #selector(handleWake),
+            name: NSWorkspace.didWakeNotification,
+            object: nil
+        )
         // Setup status item in system menu bar
         statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
         
@@ -37,6 +49,19 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         }
         
         print("[3Tap] App launched successfully in background menu bar!")
+    }
+
+    @objc private func handleSleep(_ notification: Notification) {
+        // The private multitouch stream is reset by macOS during sleep. Keep
+        // the user's enabled state and rebuild the stream after wake.
+    }
+
+    @objc private func handleWake(_ notification: Notification) {
+        TouchListener.shared.restartAfterWake()
+    }
+
+    func applicationWillTerminate(_ notification: Notification) {
+        NSWorkspace.shared.notificationCenter.removeObserver(self)
     }
     
     private func setupMenu() {
