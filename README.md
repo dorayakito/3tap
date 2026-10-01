@@ -50,12 +50,7 @@ open /Applications/3Tap.app
 
 Use a opcao **Iniciar com o Sistema** no menu do 3Tap. No macOS 13 ou superior, o aplicativo usa `SMAppService`.
 
-Nao mantenha simultaneamente um LaunchAgent manual com o mesmo identificador, pois isso pode iniciar duas copias. Se voce configurou a versao antiga manualmente, remova-a uma vez:
-
-```bash
-launchctl bootout gui/$(id -u) "$HOME/Library/LaunchAgents/com.victor.3tap.plist" 2>/dev/null || true
-rm -f "$HOME/Library/LaunchAgents/com.victor.3tap.plist"
-```
+Nao mantenha simultaneamente um LaunchAgent manual com o mesmo identificador, pois isso pode iniciar duas copias. Se voce configurou a versao antiga manualmente, remova o arquivo do 3Tap em `~/Library/LaunchAgents` e encerre o servico correspondente com o `launchctl`.
 
 Para versoes antigas do macOS, o aplicativo ainda pode usar um LaunchAgent como fallback. Nao crie esse arquivo manualmente no macOS 13+.
 
