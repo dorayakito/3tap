@@ -53,44 +53,11 @@ Use a opcao **Iniciar com o Sistema** no menu do 3Tap. No macOS 13 ou superior, 
 Nao mantenha simultaneamente um LaunchAgent manual com o mesmo identificador, pois isso pode iniciar duas copias. Se voce configurou a versao antiga manualmente, remova-a uma vez:
 
 ```bash
-launchctl bootout gui/$(id -u) ~/Library/LaunchAgents/com.victor.3tap.plist 2>/dev/null || true
-rm -f ~/Library/LaunchAgents/com.victor.3tap.plist
+launchctl bootout gui/$(id -u) "$HOME/Library/LaunchAgents/com.victor.3tap.plist" 2>/dev/null || true
+rm -f "$HOME/Library/LaunchAgents/com.victor.3tap.plist"
 ```
 
 Para versoes antigas do macOS, o aplicativo ainda pode usar um LaunchAgent como fallback. Nao crie esse arquivo manualmente no macOS 13+.
-
-<!-- The old manual LaunchAgent configuration is intentionally omitted. -->
-
-<!--
-Configuracao antiga:
-
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-<plist version="1.0">
-<dict>
-    <key>Label</key>
-    <string>com.victor.3tap</string>
-    <key>ProgramArguments</key>
-    <array>
-        <string>/Applications/3Tap.app/Contents/MacOS/3Tap</string>
-    </array>
-    <key>RunAtLoad</key>
-    <true/>
-    <key>KeepAlive</key>
-    <true/>
-    <key>ProcessType</key>
-    <string>Interactive</string>
-</dict>
-</plist>
-```
-
-2. Carregue o servico com o `launchctl`:
-
-```bash
-launchctl load -w ~/Library/LaunchAgents/com.victor.3tap.plist
-```
--->
 
 ---
 
